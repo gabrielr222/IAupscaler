@@ -1,7 +1,7 @@
 // frontend/src/pages/index.js
 import React, { useState } from "react";
 import axios from "axios";
-import { Button } from "@/components/ui/button";
+
 
 export default function ImageEnhancer() {
   const [selectedImage, setSelectedImage] = useState(null);
