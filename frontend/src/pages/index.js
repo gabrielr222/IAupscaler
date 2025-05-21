@@ -41,9 +41,13 @@ export default function ImageEnhancer() {
         onChange={handleImageChange}
         className="mb-4"
       />
-      <Button onClick={handleSubmit} disabled={loading || !selectedImage}>
-        {loading ? "Processing..." : "Upload & Enhance"}
-      </Button>
+      <button
+  onClick={handleSubmit}
+  disabled={loading || !selectedImage}
+  className="bg-white text-black px-4 py-2 rounded disabled:opacity-50"
+>
+  {loading ? "Processing..." : "Upload & Enhance"}
+</button>
       {enhancedImageUrl && (
         <div className="mt-6">
           <p className="mb-2">Your enhanced image is ready:</p>
