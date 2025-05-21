@@ -22,7 +22,7 @@ export default function ImageEnhancer() {
     formData.append("image", selectedImage);
 
     try {
-      const response = await axios.post("https://TU_BACKEND_URL/api/enhance", formData);
+      const response = await axios.post("https://iaupscaler-production.up.railway.app/api/enhance", formData);
       setEnhancedImageUrl(response.data.imageUrl);
     } catch (error) {
       console.error("Error enhancing image:", error);
