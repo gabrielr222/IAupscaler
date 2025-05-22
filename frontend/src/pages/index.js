@@ -1,70 +1,57 @@
 // frontend/src/pages/index.js
-import React, { useState } from "react";
-import axios from "axios";
+import React from "react";
+import Link from "next/link";
 
-
-export default function ImageEnhancer() {
-  const [selectedImage, setSelectedImage] = useState(null);
-  const [enhancedImageUrl, setEnhancedImageUrl] = useState(null);
-  const [loading, setLoading] = useState(false);
-
-  const handleImageChange = (e) => {
-    setSelectedImage(e.target.files[0]);
-    setEnhancedImageUrl(null);
-  };
-
-  const handleSubmit = async () => {
-    if (!selectedImage) return;
-
-    setLoading(true);
-
-    const formData = new FormData();
-    formData.append("image", selectedImage);
-
-    try {
-      const response = await axios.post("https://iaupscaler-production.up.railway.app/api/enhance", formData);
-      setEnhancedImageUrl(response.data.imageUrl);
-    } catch (error) {
-      console.error("Error enhancing image:", error);
-      alert("There was an error enhancing your image.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
+export default function Home() {
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-4">
-      <h1 className="text-3xl font-bold mb-6">Enhance Your Image with AI</h1>
-      <input
-        type="file"
-        accept="image/*"
-        onChange={handleImageChange}
-        className="mb-4"
-      />
-      <button
-  onClick={handleSubmit}
-  disabled={loading || !selectedImage}
-  className="bg-white text-black px-4 py-2 rounded disabled:opacity-50"
->
-  {loading ? "Processing..." : "Upload & Enhance"}
-</button>
-      {enhancedImageUrl && (
-        <div className="mt-6">
-          <p className="mb-2">Your enhanced image is ready:</p>
-          <img
-            src={enhancedImageUrl}
-            alt="Enhanced"
-            className="max-w-full max-h-96 border border-white rounded"
-          />
-          <a
-            href={enhancedImageUrl}
-            download
-            className="block mt-2 underline text-blue-400"
-          >
-            Download Image
-          </a>
+    <div className="min-h-screen bg-[#0e1013] text-white font-sans">
+      {/* Header */}
+      <header className="flex items-center justify-between px-6 py-4 border-b border-gray-800">
+        <h1 className="text-2xl font-bold tracking-tight">IA Upscaler</h1>
+        <Link
+          href="/login"
+          className="text-sm text-white border px-4 py-1.5 rounded hover:bg-white hover:text-black transition"
+        >
+          Log In
+        </Link>
+      </header>
+
+      {/* Hero Section */}
+      <main className="flex flex-col items-center justify-center text-center px-6 py-20">
+        <h2 className="text-4xl sm:text-5xl font-bold max-w-3xl leading-tight mb-6">
+          Enhance your images with AI precision
+        </h2>
+        <p className="text-gray-400 text-lg max-w-xl mb-10">
+          Upscale and sharpen your images in seconds. Just drag and drop, and let AI do the rest.
+        </p>
+        <Link
+          href="/enhance"
+          className="bg-white text-black px-6 py-3 rounded text-lg font-medium hover:bg-gray-200 transition"
+        >
+          Try it now
+        </Link>
+      </main>
+
+      {/* Examples Section */}
+      <section className="bg-[#121417] py-16 px-6">
+        <h3 className="text-2xl font-semibold mb-8 text-center">Examples</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
+          <div className="bg-black rounded-lg overflow-hidden border border-gray-700">
+            <img src="/examples/example1.jpg" alt="Example 1" className="w-full h-auto" />
+          </div>
+          <div className="bg-black rounded-lg overflow-hidden border border-gray-700">
+            <img src="/examples/example2.jpg" alt="Example 2" className="w-full h-auto" />
+          </div>
+          <div className="bg-black rounded-lg overflow-hidden border border-gray-700">
+            <img src="/examples/example3.jpg" alt="Example 3" className="w-full h-auto" />
+          </div>
         </div>
-      )}
+      </section>
+
+      {/* Footer */}
+      <footer className="text-center py-6 text-sm text-gray-500 border-t border-gray-800">
+        © 2025 IA Upscaler. All rights reserved.
+      </footer>
     </div>
   );
 }
