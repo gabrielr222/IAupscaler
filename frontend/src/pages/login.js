@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/router';
-import { auth } from '../lib/firebase';
+import { getFirebaseAuth } from '../lib/firebase';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
 
 export default function Login() {
@@ -17,10 +17,12 @@ export default function Login() {
     setLoading(true);
     setError(null);
     try {
+      const auth = getFirebaseAuth();
       await signInWithEmailAndPassword(auth, email, password);
       router.push('/app');
     } catch (err) {
       try {
+        const auth = getFirebaseAuth();
         await createUserWithEmailAndPassword(auth, email, password);
         router.push('/app');
       } catch (signupErr) {

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import { auth } from '../lib/firebase';
+import { getFirebaseAuth } from '../lib/firebase';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 
 export default function AppPage() {
@@ -16,6 +16,7 @@ export default function AppPage() {
   const router = useRouter();
 
   useEffect(() => {
+    const auth = getFirebaseAuth();
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser) {
         setUser(currentUser);
@@ -31,6 +32,7 @@ export default function AppPage() {
   }, [router]);
 
   const handleLogout = async () => {
+    const auth = getFirebaseAuth();
     await signOut(auth);
     router.push('/login');
   };
