@@ -2,8 +2,9 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/router';
-import { auth } from '../lib/firebase';
+import { auth, db } from '../lib/firebase';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
+import { doc, setDoc } from 'firebase/firestore';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -21,7 +22,8 @@ export default function Login() {
       router.push('/app');
     } catch (err) {
       try {
-        await createUserWithEmailAndPassword(auth, email, password);
+        const cred = await createUserWithEmailAndPassword(auth, email, password);
+        await setDoc(doc(db, 'users', cred.user.uid), { credits: 3 });
         router.push('/app');
       } catch (signupErr) {
         setError(signupErr.message);
