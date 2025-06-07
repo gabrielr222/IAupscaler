@@ -4,13 +4,13 @@ import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyD75Y_mrVTEGRt-ixfolWVQPrQDHYwxIYI",
-  authDomain: "formulario-registro-1edc8.firebaseapp.com",
-  projectId: "formulario-registro-1edc8",
-  storageBucket: "formulario-registro-1edc8.firebasestorage.app",
-  messagingSenderId: "1034766354728",
-  appId: "1:1034766354728:web:52e93db9b638659ac5e81d",
-  measurementId: "G-DXHB80MN9L"
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
 const app = initializeApp(firebaseConfig);
