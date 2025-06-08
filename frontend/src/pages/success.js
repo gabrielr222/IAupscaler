@@ -5,6 +5,7 @@ export default function SuccessPage() {
   const router = useRouter();
 
   useEffect(() => {
+    if (!router.isReady) return;
     const { uid } = router.query;
 
     if (uid) {
@@ -22,7 +23,7 @@ export default function SuccessPage() {
           router.push('/app');
         });
     }
-  }, [router]);
+  }, [router.isReady, router.query.uid]);
 
   return (
     <div style={{ color: 'white', backgroundColor: '#0d1117', height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>

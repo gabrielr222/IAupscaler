@@ -20,7 +20,8 @@ export default async function handler(req, res) {
     const userSnap = await userRef.get();
 
     if (!userSnap.exists) {
-      return res.status(200).json({ credits: 0, freeUsesLeft: 0 });
+      await userRef.set({ credits: 0, freeUsesLeft: 3 });
+      return res.status(200).json({ credits: 0, freeUsesLeft: 3 });
     }
 
     const data = userSnap.data();
