@@ -21,6 +21,13 @@ Both the frontend and backend rely on several environment variables. Create a `.
 - `CLOUDINARY_API_KEY` – Cloudinary API key.
 - `CLOUDINARY_API_SECRET` – Cloudinary API secret.
 - `CLOUDINARY_UPLOAD_PRESET` – upload preset used when uploading images.
+- `NEXT_PUBLIC_FIREBASE_API_KEY` – Firebase client API key.
+- `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN` – Firebase authentication domain.
+- `NEXT_PUBLIC_FIREBASE_PROJECT_ID` – Firebase project ID.
+- `NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET` – Firebase storage bucket.
+- `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID` – Firebase Cloud Messaging sender ID.
+- `NEXT_PUBLIC_FIREBASE_APP_ID` – Firebase app ID.
+- `NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID` – Firebase analytics measurement ID.
 - `PORT` – (optional) port for the Express server when running the backend.
 
 ## Running Locally
