@@ -1,5 +1,4 @@
-import { initializeApp, cert, getApps } from 'firebase-admin/app';
-import { getFirestore } from 'firebase-admin/firestore';
+import admin from 'firebase-admin';
 
 const key = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
 if (!key) {
@@ -13,11 +12,13 @@ try {
   throw new Error('FIREBASE_SERVICE_ACCOUNT_KEY contains invalid JSON');
 }
 
-const app = getApps().length
-  ? getApps()[0]
-  : initializeApp({ credential: cert(serviceAccount) });
+if (!admin.apps.length) {
+  admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+  });
+}
 
-const db = getFirestore(app);
+const db = admin.firestore();
 
 export { db };
 
