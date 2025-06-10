@@ -1,15 +1,8 @@
 import { buffer } from 'micro';
 import Stripe from 'stripe';
-import { initializeApp, cert, getApps } from 'firebase-admin/app';
-import { getFirestore } from 'firebase-admin/firestore';
+import { db } from '../../lib/firebaseAdmin';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-
-const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY);
-if (!getApps().length) {
-  initializeApp({ credential: cert(serviceAccount) });
-}
-const db = getFirestore();
 
 export const config = {
   api: {
