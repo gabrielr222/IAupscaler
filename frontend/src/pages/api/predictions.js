@@ -1,4 +1,7 @@
 import Replicate from 'replicate';
+import { db } from '../../lib/firebaseAdmin';
+
+const CREDIT_COST = 1.0; // amount of credits deducted per enhancement
 
 const replicate = new Replicate({
   auth: process.env.REPLICATE_API_TOKEN,
@@ -9,7 +12,11 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { image } = req.body;
+  const { image, uid } = req.body;
+
+  if (!image || !uid) {
+    return res.status(400).json({ error: 'Missing image or uid' });
+  }
 
   try {
     const prediction = await replicate.predictions.create({
@@ -30,7 +37,35 @@ export default async function handler(req, res) {
     }
 
     if (prediction.status === 'succeeded' && Array.isArray(prediction.output) && prediction.output[0]) {
-      return res.status(200).json({ imageUrl: prediction.output[0] });
+      let updatedCredits = 0;
+      let updatedFreeUsesLeft = 0;
+
+      try {
+        const userRef = db.collection('users').doc(uid);
+        const snap = await userRef.get();
+
+        if (!snap.exists) {
+          updatedCredits = 0;
+          updatedFreeUsesLeft = 3;
+          await userRef.set({ credits: updatedCredits, freeUsesLeft: updatedFreeUsesLeft });
+        } else {
+          const data = snap.data();
+          updatedCredits = data.credits || 0;
+          updatedFreeUsesLeft = data.freeUsesLeft || 0;
+        }
+
+        if (updatedFreeUsesLeft > 0) {
+          updatedFreeUsesLeft -= 1;
+        } else if (updatedCredits >= CREDIT_COST) {
+          updatedCredits = parseFloat((updatedCredits - CREDIT_COST).toFixed(2));
+        }
+
+        await userRef.update({ credits: updatedCredits, freeUsesLeft: updatedFreeUsesLeft });
+      } catch (dbErr) {
+        console.error('Failed to update user credits:', dbErr);
+      }
+
+      return res.status(200).json({ imageUrl: prediction.output[0], updatedCredits, updatedFreeUsesLeft });
     } else {
       return res.status(500).json({ error: 'No valid image output from Replicate', output: prediction.output });
     }
