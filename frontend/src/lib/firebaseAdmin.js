@@ -1,23 +1,23 @@
-import admin from 'firebase-admin';
+import { initializeApp, cert, getApps } from 'firebase-admin/app';
+import { getAuth } from 'firebase-admin/auth';
 
-let serviceAccount;
+let app;
 
-try {
+if (!getApps().length) {
   const base64 = process.env.FIREBASE_SERVICE_ACCOUNT_KEY_BASE64;
-  if (!base64) throw new Error('Missing FIREBASE_SERVICE_ACCOUNT_KEY_BASE64');
-  const decoded = Buffer.from(base64, 'base64').toString('utf-8');
-  serviceAccount = JSON.parse(decoded);
-} catch (e) {
-  throw new Error(`❌ Failed to parse service account key: ${e.message}`);
-}
 
-if (!admin.apps.length) {
-  admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
+  if (!base64) {
+    throw new Error('Missing FIREBASE_SERVICE_ACCOUNT_KEY_BASE64');
+  }
+
+  const jsonStr = Buffer.from(base64, 'base64').toString('utf8');
+  const serviceAccount = JSON.parse(jsonStr);
+
+  app = initializeApp({
+    credential: cert(serviceAccount),
   });
+} else {
+  app = getApps()[0];
 }
 
-const db = admin.firestore();
-const auth = admin.auth();
-
-export { admin, db, auth };
+export { app, getAuth };
