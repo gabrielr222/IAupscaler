@@ -1,5 +1,3 @@
-// frontend/pages/app.js
-
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { auth } from '../lib/firebase';
@@ -15,32 +13,27 @@ export default function AppPage() {
   const [freeUsesLeft, setFreeUsesLeft] = useState(0);
   const router = useRouter();
 
-useEffect(() => {
-  const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-    if (currentUser) {
-      // 🔄 Refrescar datos
-      await currentUser.reload();
-
-      // 🚫 Bloquear si no verificó el correo
-      if (!currentUser.emailVerified) {
-        alert('Please verify your email before using the app.');
-        await signOut(auth);
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      if (currentUser) {
+        await currentUser.reload();
+        if (!currentUser.emailVerified) {
+          alert('Please verify your email before using the app.');
+          await signOut(auth);
+          router.push('/login');
+          return;
+        }
+        setUser(currentUser);
+        const res = await fetch(`/api/credits?uid=${currentUser.uid}`);
+        const data = await res.json();
+        setCredits(data.credits);
+        setFreeUsesLeft(data.freeUsesLeft);
+      } else {
         router.push('/login');
-        return;
       }
-
-      // 👤 Continuar si está verificado
-      setUser(currentUser);
-      const res = await fetch(`/api/credits?uid=${currentUser.uid}`);
-      const data = await res.json();
-      setCredits(data.credits);
-      setFreeUsesLeft(data.freeUsesLeft);
-    } else {
-      router.push('/login');
-    }
-  });
-  return () => unsubscribe();
-}, [router]);
+    });
+    return () => unsubscribe();
+  }, [router]);
 
   const handleLogout = async () => {
     await signOut(auth);
@@ -80,8 +73,17 @@ useEffect(() => {
         body: JSON.stringify({ image: imageUrl, uid: user.uid }),
       });
 
-      const { imageUrl: result, updatedCredits, updatedFreeUsesLeft, durationSeconds, costCharged } = await response.json();
-alert(`Processing time: ${durationSeconds}s - Charged: $${costCharged}`);
+      const resultData = await response.json();
+
+      if (!response.ok) {
+        console.error('Prediction failed:', resultData);
+        alert(resultData.error || 'Enhancement failed.');
+        setProcessing(false);
+        return;
+      }
+
+      const { imageUrl: result, updatedCredits, updatedFreeUsesLeft, durationSeconds, costCharged } = resultData;
+      alert(`Processing time: ${durationSeconds}s - Charged: $${costCharged}`);
       setResultUrl(result);
       setCredits(updatedCredits);
       setFreeUsesLeft(updatedFreeUsesLeft);
@@ -127,9 +129,9 @@ alert(`Processing time: ${durationSeconds}s - Charged: $${costCharged}`);
         <p style={{ fontSize: '1.2rem', fontWeight: 'bold', color: '#10b981', marginBottom: '1rem' }}>
           Free images left: {freeUsesLeft}
         </p>
-       <p style={{ fontSize: '1rem', color: '#ccc', marginBottom: '1rem' }}>
-  Balance: ${typeof credits === 'number' ? credits.toFixed(2) : '0.00'}
-</p>
+        <p style={{ fontSize: '1rem', color: '#ccc', marginBottom: '1rem' }}>
+          Balance: ${typeof credits === 'number' ? credits.toFixed(2) : '0.00'}
+        </p>
         <button onClick={handleRecharge} style={{ background: '#10b981', color: 'white', padding: '0.5rem 1rem', borderRadius: '6px', border: 'none', marginBottom: '1rem', cursor: 'pointer' }}>
           Buy Credits
         </button>
