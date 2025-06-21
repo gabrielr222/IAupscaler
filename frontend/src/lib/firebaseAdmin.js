@@ -1,23 +1,21 @@
 import { initializeApp, cert, getApps } from 'firebase-admin/app';
-import { getAuth } from 'firebase-admin/auth';
+import { getFirestore } from 'firebase-admin/firestore';
 
-let app;
+const base64 = process.env.FIREBASE_SERVICE_ACCOUNT_KEY_BASE64;
 
-if (!getApps().length) {
-  const base64 = process.env.FIREBASE_SERVICE_ACCOUNT_KEY_BASE64;
-
-  if (!base64) {
-    throw new Error('Missing FIREBASE_SERVICE_ACCOUNT_KEY_BASE64');
-  }
-
-  const jsonStr = Buffer.from(base64, 'base64').toString('utf8');
-  const serviceAccount = JSON.parse(jsonStr);
-
-  app = initializeApp({
-    credential: cert(serviceAccount),
-  });
-} else {
-  app = getApps()[0];
+if (!base64) {
+  throw new Error('Missing FIREBASE_SERVICE_ACCOUNT_KEY_BASE64');
 }
 
-export { app, getAuth };
+const jsonStr = Buffer.from(base64, 'base64').toString('utf8');
+const serviceAccount = JSON.parse(jsonStr);
+
+const app = getApps().length === 0
+  ? initializeApp({
+      credential: cert(serviceAccount),
+    })
+  : getApps()[0];
+
+const db = getFirestore(app);
+
+export { db };

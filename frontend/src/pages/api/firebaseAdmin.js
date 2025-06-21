@@ -1,20 +1,28 @@
-// frontend/src/lib/firebaseAdmin.js
-import admin from 'firebase-admin';
+import { initializeApp, cert, getApps } from 'firebase-admin/app';
+import { getFirestore } from 'firebase-admin/firestore';
 
-let serviceAccount;
+let app;
+let db;
 
-try {
-  serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY);
-} catch (e) {
-  throw new Error('❌ Failed to parse FIREBASE_SERVICE_ACCOUNT_KEY: ' + e.message);
-}
+if (!getApps().length) {
+  if (!process.env.FIREBASE_SERVICE_ACCOUNT_KEY_BASE64) {
+    throw new Error('Missing FIREBASE_SERVICE_ACCOUNT_KEY_BASE64');
+  }
 
-if (!admin.apps.length) {
-  admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
+  const decodedServiceAccount = JSON.parse(
+    Buffer.from(
+      process.env.FIREBASE_SERVICE_ACCOUNT_KEY_BASE64,
+      'base64'
+    ).toString('utf8')
+  );
+
+  app = initializeApp({
+    credential: cert(decodedServiceAccount),
   });
+
+  db = getFirestore(app);
+} else {
+  db = getFirestore(); // Usa la app ya inicializada
 }
 
-const db = admin.firestore();
-
-export { admin, db };
+export { db };
