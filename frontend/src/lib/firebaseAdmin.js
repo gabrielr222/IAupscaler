@@ -1,16 +1,12 @@
 // frontend/src/lib/firebaseAdmin.js
 import admin from 'firebase-admin';
-import fs from 'fs';
-import path from 'path';
 
 let serviceAccount;
 
 try {
-  const filePath = path.join(process.cwd(), 'firebase-key.json'); // asegurate de que este archivo exista
-  const rawData = fs.readFileSync(filePath, 'utf8');
-  serviceAccount = JSON.parse(rawData);
+  serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY);
 } catch (e) {
-  throw new Error('Failed to load firebase-key.json: ' + e.message);
+  throw new Error('❌ Failed to parse FIREBASE_SERVICE_ACCOUNT_KEY: ' + e.message);
 }
 
 if (!admin.apps.length) {
@@ -19,7 +15,6 @@ if (!admin.apps.length) {
   });
 }
 
-// ✅ Asegurate de exportar `db`
 const db = admin.firestore();
 
 export { admin, db };
