@@ -56,43 +56,46 @@ export default function AppPage() {
 
     setProcessing(true);
 
-    try {
-      const formData = new FormData();
-      formData.append('file', selectedFile);
+    const reader = new FileReader();
+    reader.onloadend = async () => {
+      try {
+        const imageBase64 = reader.result;
 
-      const upload = await fetch('/api/cloudinary-upload', {
-        method: 'POST',
-        body: formData,
-      });
+        const uploadRes = await fetch('/api/cloudinary-upload', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ imageBase64 }),
+        });
 
-      const { imageUrl } = await upload.json();
+        const { imageUrl } = await uploadRes.json();
 
-      const response = await fetch('/api/predictions', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ image: imageUrl, uid: user.uid }),
-      });
+        const predictionRes = await fetch('/api/predictions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ image: imageUrl, uid: user.uid }),
+        });
 
-      const resultData = await response.json();
+        const {
+          imageUrl: result,
+          updatedCredits,
+          updatedFreeUsesLeft,
+          durationSeconds,
+          costCharged
+        } = await predictionRes.json();
 
-      if (!response.ok) {
-        console.error('Prediction failed:', resultData);
-        alert(resultData.error || 'Enhancement failed.');
-        setProcessing(false);
-        return;
+        alert(`Processing time: ${durationSeconds}s - Charged: $${costCharged}`);
+        setResultUrl(result);
+        setCredits(updatedCredits);
+        setFreeUsesLeft(updatedFreeUsesLeft);
+      } catch (error) {
+        console.error('Enhancement error:', error);
+        alert('Error during image enhancement.');
       }
 
-      const { imageUrl: result, updatedCredits, updatedFreeUsesLeft, durationSeconds, costCharged } = resultData;
-      alert(`Processing time: ${durationSeconds}s - Charged: $${costCharged}`);
-      setResultUrl(result);
-      setCredits(updatedCredits);
-      setFreeUsesLeft(updatedFreeUsesLeft);
-    } catch (error) {
-      console.error('Enhancement error:', error);
-      alert('Error during image enhancement.');
-    }
+      setProcessing(false);
+    };
 
-    setProcessing(false);
+    reader.readAsDataURL(selectedFile);
   };
 
   const downloadImage = () => {
@@ -135,10 +138,6 @@ export default function AppPage() {
         <button onClick={handleRecharge} style={{ background: '#10b981', color: 'white', padding: '0.5rem 1rem', borderRadius: '6px', border: 'none', marginBottom: '1rem', cursor: 'pointer' }}>
           Buy Credits
         </button>
-        <p style={{ fontSize: '1.2rem', fontWeight: 'bold', color: '#10b981', marginBottom: '2rem' }}>
-          The most affordable upscaler on the market — only pay per use, no subscriptions required.
-        </p>
-
         <label htmlFor="upload" style={{ display: 'block', marginBottom: '1rem', fontSize: '1rem', fontWeight: 'bold', color: '#ccc' }}>Select an image to upscale:</label>
         <input id="upload" type="file" accept="image/*" onChange={handleFileChange} style={{ marginBottom: '1.5rem' }} />
 
@@ -157,11 +156,8 @@ export default function AppPage() {
                 border: 'none',
                 fontWeight: 'bold',
                 fontSize: '1rem',
-                cursor: 'pointer',
-                transition: 'transform 0.2s ease-in-out'
+                cursor: 'pointer'
               }}
-              onMouseOver={e => e.target.style.transform = 'scale(1.05)'}
-              onMouseOut={e => e.target.style.transform = 'scale(1)'}
             >
               {processing ? 'Enhancing...' : 'Enhance Image'}
             </button>
@@ -203,11 +199,8 @@ export default function AppPage() {
             fontWeight: 'bold',
             fontSize: '1rem',
             cursor: 'pointer',
-            marginTop: '3rem',
-            transition: 'transform 0.2s ease-in-out'
+            marginTop: '3rem'
           }}
-          onMouseOver={e => e.target.style.transform = 'scale(1.05)'}
-          onMouseOut={e => e.target.style.transform = 'scale(1)'}
         >
           Log out
         </button>
