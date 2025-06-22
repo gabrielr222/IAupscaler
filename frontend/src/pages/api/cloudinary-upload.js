@@ -6,6 +6,14 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
+export const config = {
+  api: {
+    bodyParser: {
+      sizeLimit: '10mb', // Aumenta el límite si las imágenes son grandes
+    },
+  },
+};
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
