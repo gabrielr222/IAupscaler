@@ -11,6 +11,7 @@ export default function AppPage() {
   const [processing, setProcessing] = useState(false);
   const [credits, setCredits] = useState(0);
   const [freeUsesLeft, setFreeUsesLeft] = useState(0);
+  const [history, setHistory] = useState([]);
   const router = useRouter();
 
   useEffect(() => {
@@ -28,6 +29,7 @@ export default function AppPage() {
         const data = await res.json();
         setCredits(data.credits);
         setFreeUsesLeft(data.freeUsesLeft);
+        loadHistory(currentUser.uid);
       } else {
         router.push('/login');
       }
@@ -38,6 +40,16 @@ export default function AppPage() {
   const handleLogout = async () => {
     await signOut(auth);
     router.push('/login');
+  };
+
+  const loadHistory = async (uid) => {
+    try {
+      const res = await fetch(`/api/history?uid=${uid}`);
+      const data = await res.json();
+      setHistory(data.history || []);
+    } catch (e) {
+      console.error('History load error:', e);
+    }
   };
 
   const handleFileChange = (e) => {
@@ -87,6 +99,7 @@ export default function AppPage() {
         setResultUrl(result);
         setCredits(updatedCredits);
         setFreeUsesLeft(updatedFreeUsesLeft);
+        loadHistory(user.uid);
       } catch (error) {
         console.error('Enhancement error:', error);
         alert('Error during image enhancement.');
@@ -161,6 +174,27 @@ export default function AppPage() {
             >
               {processing ? 'Enhancing...' : 'Enhance Image'}
             </button>
+          </div>
+        )}
+
+        {history.length > 0 && (
+          <div style={{ marginTop: '2rem', textAlign: 'left' }}>
+            <h2 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>History</h2>
+            <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+              {history.map((item, idx) => (
+                <div key={idx} style={{ textAlign: 'center' }}>
+                  <img
+                    src={item.imageUrl}
+                    alt={`History ${idx}`}
+                    style={{ width: '150px', borderRadius: '6px' }}
+                  />
+                  <br />
+                  <a href={item.imageUrl} download style={{ color: '#3b82f6' }}>
+                    Download
+                  </a>
+                </div>
+              ))}
+            </div>
           </div>
         )}
 

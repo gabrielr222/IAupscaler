@@ -1,8 +1,6 @@
 // frontend/src/pages/api/credits.js
 import { db } from '../../lib/firebaseAdmin';
 
-console.log('DB:', db); // 👈 Este log
-
 export default async function handler(req, res) {
   const { uid } = req.query;
 

@@ -1,6 +1,6 @@
 # IAupscaler
 
-This repository contains a frontend built with Next.js and an optional Express backend for image upscaling. The code is organized as follows:
+This repository contains a frontend built with Next.js and an optional Express backend for image upscaling. The code is organized as follows. The app now stores the last three processed images per user so they can be downloaded later:
 
 ```
 frontend/  - Next.js application with API routes and React components
@@ -28,6 +28,8 @@ Both the frontend and backend rely on several environment variables. Create a `.
 - `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID` – Firebase Cloud Messaging sender ID.
 - `NEXT_PUBLIC_FIREBASE_APP_ID` – Firebase app ID.
 - `NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID` – Firebase analytics measurement ID.
+- `NEXT_PUBLIC_ADMIN_USER` – admin login email.
+- `NEXT_PUBLIC_ADMIN_PASS` – admin login password.
 - `PORT` – (optional) port for the Express server when running the backend.
 
 ## Running Locally
@@ -59,4 +61,8 @@ Both the frontend and backend rely on several environment variables. Create a `.
 5. If you also wish to deploy the Express backend, add another service with root `backend` using `npm start`.
 
 Railway will automatically install dependencies and deploy the application.
+
+## History Feature
+
+When an image is processed, the result is uploaded to Cloudinary and the URL is saved in a `history` subcollection under the user's Firestore document. Only the three most recent images are kept. You can retrieve them via the `/api/history` endpoint and they are displayed on the app page for easy download.
 
