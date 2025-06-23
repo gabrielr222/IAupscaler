@@ -45,11 +45,11 @@ export default async function handler(req, res) {
     const costCharged = parseFloat((durationSeconds * RATE_PER_SECOND).toFixed(2));
 
     if (prediction.status === 'succeeded' && Array.isArray(prediction.output) && prediction.output[0]) {
+      const userRef = db.collection('users').doc(uid);
       let updatedCredits = 0;
       let updatedFreeUsesLeft = 0;
 
       try {
-        const userRef = db.collection('users').doc(uid);
         const snap = await userRef.get();
 
         if (!snap.exists) {
