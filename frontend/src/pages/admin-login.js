@@ -7,7 +7,7 @@ export default function AdminLogin() {
   const router = useRouter();
 
   const handleLogin = () => {
-    if (user === 'admin@admin.com' && pass === 'Admin$2025$') {
+    if (user === process.env.NEXT_PUBLIC_ADMIN_USER && pass === process.env.NEXT_PUBLIC_ADMIN_PASS) {
       localStorage.setItem('adminAuth', 'true');
       router.push('/admin');
     } else {

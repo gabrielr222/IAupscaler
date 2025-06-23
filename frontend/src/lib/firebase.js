@@ -1,5 +1,4 @@
 // src/lib/firebase.js
-console.log("Firebase API Key:", process.env.NEXT_PUBLIC_FIREBASE_API_KEY);
 
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";

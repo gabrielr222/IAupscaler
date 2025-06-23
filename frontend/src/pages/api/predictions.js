@@ -1,5 +1,12 @@
 import Replicate from 'replicate';
 import { db } from '../../lib/firebaseAdmin';
+import { v2 as cloudinary } from 'cloudinary';
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 const replicate = new Replicate({
   auth: process.env.REPLICATE_API_TOKEN,
@@ -77,8 +84,26 @@ export default async function handler(req, res) {
         console.error('Failed to update user credits:', dbErr);
       }
 
+      let storedUrl = prediction.output[0];
+      try {
+        const uploadRes = await cloudinary.uploader.upload(prediction.output[0], {
+          upload_preset: process.env.CLOUDINARY_UPLOAD_PRESET,
+        });
+        storedUrl = uploadRes.secure_url;
+        const historyRef = userRef.collection('history');
+        await historyRef.add({ imageUrl: storedUrl, timestamp: Date.now() });
+
+        const old = await historyRef
+          .orderBy('timestamp', 'desc')
+          .offset(3)
+          .get();
+        await Promise.all(old.docs.map((d) => d.ref.delete()));
+      } catch (histErr) {
+        console.error('Failed to store history:', histErr);
+      }
+
       return res.status(200).json({
-        imageUrl: prediction.output[0],
+        imageUrl: storedUrl,
         updatedCredits,
         updatedFreeUsesLeft,
         durationSeconds: parseFloat(durationSeconds.toFixed(2)),
