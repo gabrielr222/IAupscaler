@@ -151,6 +151,20 @@ export default function AppPage() {
         <button onClick={handleRecharge} style={{ background: '#10b981', color: 'white', padding: '0.5rem 1rem', borderRadius: '6px', border: 'none', marginBottom: '1rem', cursor: 'pointer' }}>
           Buy Credits
         </button>
+        <button
+          onClick={() => router.push('/history')}
+          style={{
+            background: 'linear-gradient(to right, #10b981, #3b82f6)',
+            color: 'white',
+            padding: '0.5rem 1rem',
+            borderRadius: '6px',
+            border: 'none',
+            marginBottom: '1rem',
+            cursor: 'pointer'
+          }}
+        >
+          Images History
+        </button>
         <label htmlFor="upload" style={{ display: 'block', marginBottom: '1rem', fontSize: '1rem', fontWeight: 'bold', color: '#ccc' }}>Select an image to upscale:</label>
         <input id="upload" type="file" accept="image/*" onChange={handleFileChange} style={{ marginBottom: '1.5rem' }} />
 

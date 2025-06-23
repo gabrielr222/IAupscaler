@@ -64,5 +64,5 @@ Railway will automatically install dependencies and deploy the application.
 
 ## History Feature
 
-When an image is processed, the result is uploaded to Cloudinary and the URL is saved in a `history` subcollection under the user's Firestore document. Only the three most recent images are kept. You can retrieve them via the `/api/history` endpoint and they are displayed on the app page for easy download.
+When an image is processed, the result is uploaded to Cloudinary and the URL is saved in a `history` subcollection under the user's Firestore document. Only the three most recent images are kept. You can retrieve them via the `/api/history` endpoint. A new **Images History** button on the profile page opens a dedicated view where these images can be downloaded.
 
