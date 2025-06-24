@@ -10,6 +10,12 @@ export default function Home() {
         <p style={{ fontSize: '1rem', marginTop: '1rem', color: '#ccc' }}>
           PixUpscaler is a high-resolution AI image enhancer that improves your photos in just one click.
         </p>
+        <p style={{ fontSize: '1rem', marginTop: '0.5rem', color: '#ccc' }}>
+          No prompts or complicated settings are required&mdash;simply upload your image and let our AI handle the rest.
+        </p>
+        <p style={{ fontSize: '1.2rem', marginTop: '1rem', color: '#10b981', fontWeight: 'bold' }}>
+          Try PixUpscaler for free!
+        </p>
       </header>
 
       <div style={{ background: '#0d1117', textAlign: 'center', paddingBottom: '3rem' }}>

@@ -42,6 +42,9 @@ export default function Login() {
     <div style={{ background: '#0d1117', color: 'white', minHeight: '100vh', padding: '2rem' }}>
       <div style={{ maxWidth: '400px', margin: '0 auto' }}>
         <h1 style={{ marginBottom: '1rem' }}>Login / Register</h1>
+        <p style={{ marginBottom: '1rem', color: '#ccc' }}>
+          Use this form to create a new account or sign in with your existing credentials.
+        </p>
         <form onSubmit={handleSubmit}>
           <input
             type="email"

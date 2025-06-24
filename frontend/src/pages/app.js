@@ -186,7 +186,14 @@ export default function AppPage() {
                 cursor: 'pointer'
               }}
             >
-              {processing ? 'Enhancing...' : 'Enhance Image'}
+              {processing ? (
+                <>
+                  Enhancing...
+                  <span className="spinner"></span>
+                </>
+              ) : (
+                'Enhance Image'
+              )}
             </button>
           </div>
         )}
