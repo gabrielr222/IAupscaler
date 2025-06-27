@@ -11,6 +11,7 @@ export default function AppPage() {
   const [processing, setProcessing] = useState(false);
   const [credits, setCredits] = useState(0);
   const [freeUsesLeft, setFreeUsesLeft] = useState(0);
+  const [mode, setMode] = useState('creative');
   const [history, setHistory] = useState([]);
   const router = useRouter();
 
@@ -98,7 +99,7 @@ export default function AppPage() {
         const predictionRes = await fetch('/api/predictions', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ image: imageUrl, uid: user.uid }),
+          body: JSON.stringify({ image: imageUrl, uid: user.uid, mode }),
         });
 
         const {
@@ -181,6 +182,22 @@ export default function AppPage() {
         </button>
         <label htmlFor="upload" style={{ display: 'block', marginBottom: '1rem', fontSize: '1rem', fontWeight: 'bold', color: '#ccc' }}>Select an image to upscale:</label>
         <input id="upload" type="file" accept="image/*" onChange={handleFileChange} style={{ marginBottom: '1.5rem' }} />
+
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1rem' }}>
+          <span style={{ marginRight: '0.5rem' }}>Creative</span>
+          <label className="switch">
+            <input
+              type="checkbox"
+              checked={mode === 'precise'}
+              onChange={(e) => setMode(e.target.checked ? 'precise' : 'creative')}
+            />
+            <span className="slider"></span>
+          </label>
+          <span style={{ marginLeft: '0.5rem' }}>Precise</span>
+        </div>
+        <p style={{ maxWidth: '600px', margin: '0 auto 1rem', color: '#ccc', fontSize: '0.9rem' }}>
+          Creative mode adds extra details, perfect for renders or digital images. Precise mode improves quality without altering the content, ideal for real photos, faces and landscapes.
+        </p>
 
         {previewUrl && (
           <div style={{ marginBottom: '2rem' }}>
