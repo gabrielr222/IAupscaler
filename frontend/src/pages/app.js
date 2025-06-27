@@ -54,9 +54,26 @@ export default function AppPage() {
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
-    setSelectedFile(file);
+     setSelectedFile(file);
     setPreviewUrl(URL.createObjectURL(file));
     setResultUrl(null);
+    if (!file) return;
+
+    const img = new Image();
+    img.onload = () => {
+      if (img.width > 3000) {
+        alert('Maximum allowed image width is 3000px.');
+        e.target.value = null;
+        setSelectedFile(null);
+        setPreviewUrl(null);
+        setResultUrl(null);
+        return;
+      }
+      setSelectedFile(file);
+      setPreviewUrl(URL.createObjectURL(file));
+      setResultUrl(null);
+    };
+    img.src = URL.createObjectURL(file);
   };
 
   const handleEnhance = async () => {
