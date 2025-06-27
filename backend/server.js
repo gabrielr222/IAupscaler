@@ -24,7 +24,9 @@ app.post("/api/enhance", upload.single("image"), async (req, res) => {
       {
         version: "dfad41707589d68ecdccd1dfa600d55a208f9310748e44bfe35b4a6291453d5e",
         input: {
-          image: `data:image/jpeg;base64,${base64Image}`
+           image: `data:image/jpeg;base64,${base64Image}`
+          image: `data:image/jpeg;base64,${base64Image}`,
+          output_format: "jpg"
         }
       },
       {
