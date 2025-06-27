@@ -77,7 +77,7 @@ export default function AppPage() {
   const handleEnhance = async () => {
     if (!selectedFile) return;
     if (mode === 'precise' && selectedFile.size > 3 * 1024 * 1024) {
-      alert('The maximum size in this mode is 4MB. Please reduce your file size to proceed.');
+      alert('The maximum size in this mode is 3MB. Please reduce your file size to proceed.');
       return;
     }
     if (credits <= 0 && freeUsesLeft <= 0) {
