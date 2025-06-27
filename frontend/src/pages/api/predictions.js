@@ -13,6 +13,9 @@ const replicate = new Replicate({
 });
 
 const RATE_PER_SECOND = 0.006;
+const PRECISE_COST = 0.15;
+const CREATIVE_VERSION = 'dfad41707589d68ecdccd1dfa600d55a208f9310748e44bfe35b4a6291453d5e';
+const PRECISE_VERSION = '2fdc3b86a01d338ae89ad58e5d9241398a8a01de9b0dda41ba8a0434c8a00dc3';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -20,6 +23,7 @@ export default async function handler(req, res) {
   }
 
   const { image, uid } = req.body;
+  const { image, uid, mode = 'creative' } = req.body;
 
   if (!image || !uid) {
     return res.status(400).json({ error: 'Missing image or uid' });
@@ -33,6 +37,23 @@ export default async function handler(req, res) {
       input: { image },
        input: { image, output_format: 'jpg' },
     });
+    let prediction;
+    if (mode === 'precise') {
+      prediction = await replicate.predictions.create({
+        version: PRECISE_VERSION,
+        input: {
+          image,
+          enhance_model: 'Low Resolution V2',
+          output_format: 'jpg',
+          upscale_factor: '2x',
+        },
+      });
+    } else {
+      prediction = await replicate.predictions.create({
+        version: CREATIVE_VERSION,
+        input: { image, output_format: 'jpg' },
+      });
+    }
 
     while (prediction.status !== 'succeeded' && prediction.status !== 'failed') {
       await new Promise((resolve) => setTimeout(resolve, 2000));
@@ -44,8 +65,28 @@ export default async function handler(req, res) {
     const end = Date.now();
     const durationSeconds = Math.max((end - start) / 1000, 1); // mínimo 1 segundo
     const costCharged = parseFloat((durationSeconds * RATE_PER_SECOND).toFixed(2));
+    const costCharged =
+      mode === 'precise'
+        ? PRECISE_COST
+        : parseFloat((durationSeconds * RATE_PER_SECOND).toFixed(2));
+
+    let outputUrl = null;
+    if (prediction.status === 'succeeded') {
+      if (Array.isArray(prediction.output) && prediction.output[0]) {
+        outputUrl = prediction.output[0];
+      } else if (
+        prediction.output &&
+        typeof prediction.output === 'object' &&
+        prediction.output.image
+      ) {
+        outputUrl = prediction.output.image;
+      } else if (typeof prediction.output === 'string') {
+        outputUrl = prediction.output;
+      }
+    }
 
     if (prediction.status === 'succeeded' && Array.isArray(prediction.output) && prediction.output[0]) {
+    if (prediction.status === 'succeeded' && outputUrl) {
       const userRef = db.collection('users').doc(uid);
       let updatedCredits = 0;
       let updatedFreeUsesLeft = 0;
@@ -86,8 +127,10 @@ export default async function handler(req, res) {
       }
 
       let storedUrl = prediction.output[0];
+      let storedUrl = outputUrl;
       try {
         const uploadRes = await cloudinary.uploader.upload(prediction.output[0], {
+        const uploadRes = await cloudinary.uploader.upload(outputUrl, {
           upload_preset: process.env.CLOUDINARY_UPLOAD_PRESET,
         });
         storedUrl = uploadRes.secure_url;
@@ -113,8 +156,3 @@ export default async function handler(req, res) {
     } else {
       return res.status(500).json({ error: 'No valid image output from Replicate', output: prediction.output });
     }
-  } catch (error) {
-    console.error('Replicate error:', error);
-    return res.status(500).json({ error: 'Prediction failed' });
-  }
-}
