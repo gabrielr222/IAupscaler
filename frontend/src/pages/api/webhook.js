@@ -39,7 +39,7 @@ export default async function handler(req, res) {
         const userRef = db.collection('users').doc(uid);
         const snap = await userRef.get();
         if (!snap.exists) {
-          await userRef.set({ credits: 5.0, freeUsesLeft: 3 });
+          await userRef.set({ credits: 5.0, freeUsesLeft: 1 });
         } else {
           const current = snap.data();
           const updatedCredits = (current.credits || 0) + 5.0;
