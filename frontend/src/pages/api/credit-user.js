@@ -16,8 +16,8 @@ export default async function handler(req, res) {
     const userSnap = await userRef.get();
 
     if (!userSnap.exists) {
-      // Nuevo → se crea con los créditos comprados + los 3 usos gratis
-      await userRef.set({ credits: parseFloat(amount), freeUsesLeft: 3 });
+      // Nuevo → se crea con los créditos comprados + 1 uso gratis
+      await userRef.set({ credits: parseFloat(amount), freeUsesLeft: 1 });
     } else {
       const current = userSnap.data();
       const updatedCredits = (current.credits || 0) + parseFloat(amount);
