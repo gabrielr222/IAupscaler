@@ -54,7 +54,7 @@ export default async function handler(req, res) {
 
         if (!snap.exists) {
           updatedCredits = 0;
-          updatedFreeUsesLeft = 3;
+          updatedFreeUsesLeft = 0;
           await userRef.set({ credits: updatedCredits, freeUsesLeft: updatedFreeUsesLeft });
         } else {
           const data = snap.data();
