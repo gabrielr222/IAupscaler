@@ -13,7 +13,7 @@ export default async function handler(req, res) {
     const userSnap = await userRef.get();
 
     if (!userSnap.exists) {
-      const initialData = { credits: 0, freeUsesLeft: 1 };
+      const initialData = { credits: 0, freeUsesLeft: 0 };
       await userRef.set(initialData);
       return res.status(200).json(initialData);
     }
